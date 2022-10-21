@@ -1,0 +1,121 @@
+.modelsUploader  {
+  display: flex;
+  margin-top: 30px;
+  padding: 50px 20px;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0px 5px 7px -7px rgba(0, 0, 0, 0.75);
+  /* width: 100%; */
+  }
+  
+  .modelsUploader__top {
+    display: flex;
+    padding: 50px 20px;
+    border-bottom: 1px solid #eff2f5;
+    padding: 15px;
+  }
+  
+  .modelsUploader__top > form {
+    flex: 1;
+    display: flex;
+  }
+
+  .modelsUploader__top > form > input {
+    outline-width: 0;
+    border: none;
+    padding: 5px 20px;
+    margin: 0 10px;
+    border-radius: 999px;
+    background-color: #fff;
+  }
+  .modelsUploader__top > form > button {
+    display: none;
+  }
+
+  .modelsUploader__detail {
+    margin-top: 15px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 7px -7px rgba(0, 0, 0, 0.75);
+
+    flex: 1;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .modelsUploader__detail > form {
+    flex: 1;
+    display: flex;
+  }
+
+  .modelsUploader__detail > form > input {
+    outline-width: 0;
+    border: none;
+    padding: 5px 20px;
+    margin: 0 10px;
+    border-radius: 999px;
+  
+    background-color: #243252;
+  }
+  
+  .modelsUploader__detail > form > button {
+    display: none;
+  }
+    
+  .modelsUploader__inputPair {
+    /* display: flex; */
+    /* align-items: center; */
+    /* background-color: #e2e7eb; */
+    padding: 10px;
+    /* margin-left: 10px; */
+    /* border-radius: 999px; */
+  }
+  .modelsUploader__input {
+    display: flex;
+    align-items: center;
+    background-color: #e2e7eb;
+    border: none;
+    padding: 10px;
+    margin-left: 10px;
+    outline-width: 0;
+    width:440px;
+    border-radius: 999px;
+  }
+  
+  .modelsUploader__bottom {
+    display: flex;
+    justify-content: space-evenly;
+  }
+  
+  .modelsUploader__option {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    color: gray;
+    margin: 5px;
+  }
+  
+  .modelsUploader__option > h3 {
+    font-size: medium;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .modelsUploader__option:hover {
+    background-color: #eff2f5;
+    border-radius: 20px;
+  }
+  
+  .modelsUploader__footer{
+    /* padding: 20px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: gray;
+    padding: 25px 10px;
+    /* margin: 5px; */
+  }

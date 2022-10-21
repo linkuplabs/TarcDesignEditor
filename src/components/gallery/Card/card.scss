@@ -1,0 +1,291 @@
+.card {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.cv {
+  width: 100%;
+  height: 100%;
+  &-input-tags {
+    height: 25px;
+    border: 2px solid var(--btnBr);
+    padding: 2px;
+  }
+  &-loading {
+    z-index: 1;
+    background-color: var(--blackTransparent);
+    position: fixed;
+    width: 100%;
+    height: calc(100vh - 50px);
+    top: 50px;
+    left: 0;
+    &-svg {
+      background-color: var(--bgLightTransparent);
+      width: 250px;
+      height: 250px;
+    }
+  }
+}
+
+.cvp {
+  &-container {
+    width: calc(100% - 25px);
+    max-width: 1366px;
+    margin: 10px 0;
+    display: flex;
+    box-shadow: 0 0 10px 1px #66669a;
+    &-border {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 95%;
+      height: 95%;
+      margin: 15px;
+      padding: 15px;
+      border: 3px solid var(--btnBr);
+    }
+  }
+}
+
+.cvpc {
+  width: 100%;
+  height: 100%;
+  margin-right: 4px;
+  &-container {
+    background-color: var(--bgHighAlt);
+    width: 500px;
+    height: 500px;
+  }
+  &-inner {
+    width: calc(100% - 30px);
+    height: calc(100% - 30px);
+    margin: 6px;
+    padding: 6px;
+    border: 3px dashed var(--btnBr);
+  }
+  &-img {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    img[data-btn='cvp-img'] {
+      background-color: var(--bgDark);
+      width: 100%;
+      height: auto;
+      transition: 0.1s ease-in-out;
+      border-radius: 25px;
+      &:hover {
+        border-radius: 0;
+      }
+      &:hover + .cvpc-img-del {
+        transition: 0.25s ease;
+        opacity: 0.05;
+      }
+    }
+  }
+}
+
+.cvpci {
+  width: 100%;
+  height: 100%;
+  margin-left: 4px;
+  &-text {
+    min-width: 250px;
+    width: 95%;
+    min-height: 26px;
+    margin-top: 5px;
+    padding: 5px;
+    border: 2px solid var(--transparent);
+    outline: none;
+    word-break: break-all;
+    overflow: hidden;
+  }
+  &-name {
+    background-color: var(--bgHighAlt);
+    text-align: center;
+  }
+  &-sub {
+    margin-right: 8px;
+    align-items: flex-end;
+    p {
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+    &-lu {
+      margin-left: 4px;
+      text-decoration: 1px solid var(--black);
+      color: var(--black);
+    }
+    &-time {
+      font-size: 14px;
+    }
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  &-tags-container {
+    min-height: 25px;
+    padding: 5px;
+    margin: 5px 0;
+    overflow-y: auto;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .cvp {
+    &-container {
+      width: 512px;
+      &-border {
+        flex-direction: column;
+      }
+    }
+    &c {
+      &-container {
+        width: 100%;
+      }
+      &i {
+        margin-top: 5px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 532px) {
+  .cvp {
+    &-container {
+      width: 100%;
+      border-radius: 0;
+      &-border {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+    }
+    &c {
+      margin: 0;
+      &-container {
+        border-radius: 0;
+      }
+      &-img img[data-btn='cvp-img'] {
+        border-radius: 0;
+      }
+      &i {
+        margin: 0;
+        &-text {
+          width: calc(100% - 14px);
+          margin: 0;
+          box-shadow: none;
+          border-radius: 0;
+        }
+        &-tags-container {
+          border-radius: 0;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+.c-a {
+  background-color: var(--transparent);
+  margin: 5px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  &-act {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  &-likes {
+    display: flex;
+    align-items: center;
+    &-img {
+      background-color: var(--transparent);
+      border: none;
+      outline: none;
+      &:hover svg path:nth-child(1),
+      &:focus svg path:nth-child(1) {
+        animation: blinkLikeFill 2.5s infinite linear;
+      }
+      &:hover svg path:nth-child(2),
+      &:focus svg path:nth-child(2) {
+        animation: blinkLikeBorder 2.5s infinite linear;
+      }
+      svg {
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+      }
+      &-liked {
+        &:hover svg path:nth-child(1),
+        &:focus svg path:nth-child(1) {
+          animation: blinkLikeFillLiked 2.5s infinite linear;
+        }
+        &:hover svg path:nth-child(2),
+        &:focus svg path:nth-child(2) {
+          animation: blinkLikeBorderLiked 2.5s infinite linear;
+        }
+      }
+    }
+    &-count {
+      margin: 0;
+      font-size: 35px;
+      font-weight: 500;
+      &-liked {
+        color: #2db315;
+      }
+    }
+  }
+  &-loading-svg {
+    background-color: var(--bgLightTransparent);
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@keyframes blinkLikeFill {
+  0% {
+    fill: #ffc7e3;
+  }
+  50% {
+    fill: #e7c291;
+  }
+  100% {
+    fill: #ffc7e3;
+  }
+}
+@keyframes blinkLikeBorder {
+  0% {
+    fill: #ff6392;
+  }
+  50% {
+    fill: #ff8614;
+  }
+  100% {
+    fill: #ff6392;
+  }
+}
+
+@keyframes blinkLikeFillLiked {
+  0% {
+    fill: #b3ff93;
+  }
+  50% {
+    fill: #75d692;
+  }
+  100% {
+    fill: #b3ff93;
+  }
+}
+@keyframes blinkLikeBorderLiked {
+  0% {
+    fill: #2fe20f;
+  }
+  50% {
+    fill: #00be39;
+  }
+  100% {
+    fill: #2fe20f;
+  }
+}

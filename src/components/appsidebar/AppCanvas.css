@@ -1,0 +1,21 @@
+.AppCanvas {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.sample-canvas {
+  max-width: 1200px;
+  max-width: 1200px;
+  height: 800px;
+  width: 800px;
+  background: rgba(247, 247, 247, 0.75);
+  display: flex;
+  /* margin-left: 20; */
+
+}
+
+pre {
+  text-align: left;
+  font-size: 10px;
+}
+
