@@ -18,6 +18,19 @@ import AllOutIcon from '@material-ui/icons/AllOut';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import {DesignEditorContext } from '../../contexts/DesignEditorContext';
+import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
+import CropSquareIcon from '@mui/icons-material/CropSquare';
+import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import Icon from "@material-ui/core/Icon";
+
+const pixab = process.env.PUBLIC_URL + '/pixabay.png';
+const pixabay = "https://pixabay.com/static/img/logo_square.svg";
+
+const PixaBayIcon =  <Icon>
+    <img alt="edit" src= {pixab} style={{width: "100%"}}  />
+  </Icon>
+
 
 export const BASE_BUTTONS  = [
   {
@@ -51,6 +64,21 @@ export const BASE_BUTTONS  = [
     icon:  <WallpaperIcon />,
   },
   {
+    id: "circle",
+    name: "Circle",
+    icon:  <PanoramaFishEyeIcon />,
+  },
+  {
+    id: "square",
+    name: "Square",
+    icon:  <CropSquareIcon />,
+  },
+  {
+    id: "line",
+    name: "Line",
+    icon:  <HorizontalRuleIcon />,
+  },
+  {
     id: "uploads",
     name: "Uploads",
     icon:  <CloudUploadIcon />,
@@ -64,10 +92,10 @@ export const BASE_BUTTONS  = [
 
 
 
-const StyledToggleButton = styled(ToggleButton)(({ selectedColor }) => ({
+const StyledToggleButton = styled(ToggleButton)(({ selectedcolor }) => ({
   "&.Mui-selected, &.Mui-selected:hover": {
     color: "white",
-    backgroundColor: selectedColor
+    backgroundColor:selectedcolor
   }
 }));
 
@@ -78,10 +106,6 @@ export const AppSideToolbar = (props) => {
   const {
     selectedSidebarMenuItem,
     setSelectedSidebarMenuItem,
-    toolbarCommands, 
-    setToolbarCommands,
-    panelSearchInputText,
-    setPanelSearchInputText,
   } = useContext(DesignEditorContext);
 
 
@@ -99,6 +123,7 @@ export const AppSideToolbar = (props) => {
   return (
     <div >
     <ToggleButtonGroup
+        size="large"
       orientation="vertical"
       value={activeButton}
       exclusive
@@ -106,7 +131,7 @@ export const AppSideToolbar = (props) => {
     >
      {props.buttons.map((panelListItem) => (
       <Tooltip title={panelListItem.name} key={panelListItem.id}>
-      <StyledToggleButton value={panelListItem.id} aria-label={panelListItem.id} selected={panelListItem.id === activeButton} selectedColor="#00abc0" >
+      <StyledToggleButton value={panelListItem.id} aria-label={panelListItem.id} selected={panelListItem.id === activeButton} selectedcolor="#00abc0" >
        {panelListItem.icon}
       </StyledToggleButton>
       </Tooltip>

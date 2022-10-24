@@ -139,7 +139,7 @@ export const SettingsPanel = ({ cellWidth, cellHeight, open,images, height, onCl
         classes.pinContainer,
         open ? classes.pinContainerOpen : classes.pinContainerClose
       )}
-      style={{height:height? height:500,'border-radius': '0px 0px 0px 0px','background-color': '#fff','box-shadow': '0px 5px 7px -7px rgba(0, 0, 0, 0.75)'}}
+      style={{height:height? height:500,'borderRadius': '0px 0px 0px 0px','backgroundColor': '#fff','boxShadow': '0px 5px 7px -7px rgba(0, 0, 0, 0.75)'}}
     >
     <SwitchesGroup />
     </PerfectScrollbar>

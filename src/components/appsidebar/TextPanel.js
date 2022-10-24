@@ -3,12 +3,12 @@ import PicsUploader from '../pics/PicsUploader';
 
 import PerfectScrollbar from "react-perfect-scrollbar";
 import classNames from "classnames";
-
+import { v4 as uuid } from "uuid";
 
 import ImagesGallery from "../gallery/ImagesGallery";
 import PanelHeader  from "./PanelHeader";
 // import useStyles  from "./AppToolbarImagesPanel";
-import { makeStyles} from "@material-ui/core";
+import { makeStyles,   MenuItem,} from "@material-ui/core";
 import {DesignEditorContext } from '../../contexts/DesignEditorContext';
 
 
@@ -59,11 +59,70 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const colors = ["red", "yellow", "grey", "green", "purple", "cyan"];
+
+export const fonts = [
+  {
+    name: "Arial",
+    value: "Arial, sans-serif",
+  },
+  {
+    name: "Architects Daughter",
+    value: '"Architects Daughter", cursive',
+  },
+  {
+    name: "Caesar Dressing",
+    value: '"Caesar Dressing", cursive',
+  },
+  {
+    name: "Calligraffitti",
+    value: "Calligraffitti, cursive",
+  },
+  {
+    name: "Coming Soon",
+    value: '"Coming Soon", cursive',
+  },
+  {
+    name: "Geo",
+    value: "Geo, sans-serif",
+  },
+  {
+    name: "Geostar Fill",
+    value: '"Geostar Fill", cursive',
+  },
+  {
+    name: "Lobster",
+    value: "Lobster, cursive",
+  },
+  {
+    name: "Metal Mania",
+    value: '"Metal Mania", cursive',
+  },
+  {
+    name: "Miniver",
+    value: "Miniver, cursive",
+  },
+  {
+    name: "Open Sans",
+    value: '"Open Sans", sans-serif',
+  },
+  {
+    name: "Permanent Marker",
+    value: '"Permanent Marker", cursive',
+  },
+  {
+    name: "Roboto",
+    value: "Roboto, sans-serif",
+  },
+];
 
 
-export const UploaderPanel = ({ cellWidth, cellHeight, open,images, height, onClick }) => {
+
+export const TextPanel = ({ cellWidth, cellHeight, open,images, height, onClick }) => {
   const classes = useStyles();
   const [imageUrls, setImageUrls] = useState([]);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [font, setFont] =  React.useState(fonts[1]);
 
   const {
     cloudModelImages,
@@ -75,40 +134,22 @@ export const UploaderPanel = ({ cellWidth, cellHeight, open,images, height, onCl
     setToolbarCommands,
     panelSearchInputText,
     setPanelSearchInputText,
+    selectedFont,
+    setSelectedFont
   } = useContext(DesignEditorContext);
 
+  const handleMenuItemClick = (event,index,) => {
+    setSelectedIndex(index);
+    setFont(fonts[index])
+    setSelectedFont(fonts[index]);
+    if(onClick)onClick(fonts, index)
+  };
 
-  // React.useEffect(() => {
-  //   console.log("uploadedImages",uploadedImages)
-  //   const listItems = uploadedImages.map((filemap) => {
-  //                     return {img:filemap.key, title:filemap.value.name,file:filemap.value}
-  //                     });
-
-  //   let urls = listItems.filter ( (model)  => 
-  //               model.file.type.includes("image")
-  //               )
-
-  //   let imgs = urls.map ( (url)  => 
-  //             url.img
-  //             )
-  //   setImageUrls(imgs)
-  // }, [uploadedImages])
-
-  // React.useEffect(() => {
-  //   console.log("uploadedImages",uploadedImages)
-  //   setImageUrls(uploadedImages)
-  // }, [uploadedImages])
-
-
-  // React.useEffect(() => {
-
-  // }, [cloudModelImages])
-  let allImages = uploadedImages.concat(cloudModelImages);
+  console.log("selected font", selectedFont);
 
   return (
     <div>
 
-    <PicsUploader className= {classes.pinContainerOpen } />
 
     <PerfectScrollbar
       className={classNames(
@@ -118,7 +159,18 @@ export const UploaderPanel = ({ cellWidth, cellHeight, open,images, height, onCl
       style={{height:height? height:500,'borderRadius': '0px 0px 0px 0px','backgroundColor': '#fff','boxShadow': '0px 5px 7px -7px rgba(0, 0, 0, 0.75)'}}
     >
 
-    <ImagesGallery cellWidth ={cellWidth} cellHeight={cellHeight} images={allImages} onClick={onClick}/> 
+{fonts.map((item, index) => (
+            <MenuItem
+              key={uuid()}
+              value={item.value}
+              style={{ fontFamily: item.value }}
+              onClick={(event) => handleMenuItemClick(event, index)}
+            >
+              {item.name}
+             
+            </MenuItem>
+          ))}
+
     </PerfectScrollbar>
     </div>
   );
@@ -126,4 +178,4 @@ export const UploaderPanel = ({ cellWidth, cellHeight, open,images, height, onCl
 
 
 
-export default UploaderPanel;
+export default TextPanel;

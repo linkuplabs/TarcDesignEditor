@@ -57,6 +57,7 @@ export default function PanelHeader(props) {
                         type="text"
                         placeholder= {placeholder }
                       />
+
                       <button onClick={handleSubmit} type="submit">
                         Hidden Button
                       </button>
@@ -84,6 +85,7 @@ export default function PanelHeader(props) {
         backgroundColor: color}} >
           {tabBar}
       </div>
+
       <div   style={{  
         justifyContent: "space-evenly",
         display: "flex",
@@ -92,6 +94,17 @@ export default function PanelHeader(props) {
         backgroundColor: color}} >
           {inputForm}
           
+      </div>
+
+      <div   style={{  
+        justifyContent: "space-evenly",
+        display: "flex",
+        alignSelf: "center",
+        alignItems: "center", 
+        backgroundColor: color}} >
+        <a href="https://pixabay.com" target="_blank">
+             pixabay
+        </a>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React,{useContext} from "react";
 import {useWindowSize} from '../utils/Window';
 
-
+import axios from "axios";
 
 import { DesignEditorContext } from '../../contexts/DesignEditorContext';
 
@@ -11,41 +11,74 @@ import {shapes} from "./shapes/shapes";
 
 import {AppSideToolbar, BASE_BUTTONS } from "./AppSideToolbar";
 import AppToolbarImagesPanel  from "./AppToolbarImagesPanel";
+import TextPanel  from "./TextPanel";
 import UploaderPanel  from "./UploaderPanel";
 import SettingsPanel  from "./SettingsPanel";
 import AppCanvas from "./AppCanvas";
+import Topbar from "./toolbars/topbar";
+import Bottombar from "./toolbars/bottombar";
 
 import getStickerNames from "./stickers/stickersSrc";
+
 import "./AppSidebar.css"
 
 
 const AppSidebar = ({ pins }) => {
 
   const [imagesMenuImages, setImagesMenuImages] = React.useState([]);
+  const [images, setImages] = React.useState([]);
   const [view, setView] = React.useState('templates');
   const [stickers, setStickers] = React.useState([]);
+  const [searchedKeyword, setSearchedKeyword] = React.useState([]);
   const size = useWindowSize();
   const {width, height} = size;
 
   const {
+    panelSearchInputText,
     setSelectedSidebarMenuItem,
     toolbarCommands, 
     setToolbarCommands,
-
   } = useContext(DesignEditorContext);
 
+  // React.useEffect(() => {
+  //   fetch("https://picsum.photos/v2/list?page=2&limit=20")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       const images = data.map((d, index) => ({
+  //         src: d.download_url,
+  //         id:index
+  //       }));
+  //       console.log("got images", images);
+  //       setImagesMenuImages(images);
+  //     });
+  // }, []);
+
   React.useEffect(() => {
-    fetch("https://picsum.photos/v2/list?page=2&limit=20")
-      .then((res) => res.json())
-      .then((data) => {
-        const images = data.map((d, index) => ({
-          src: d.download_url,
+    let api_key = "30770841-415e7a8e674354c7d780eca15";
+    if (searchedKeyword !== "") {
+      axios
+        .get(
+          `https://pixabay.com/api/?key=${api_key}&q=${panelSearchInputText}&image_type=photo&min_width=500px&min_height=500px`
+        )
+        .then((res) => {
+          let images = res.data.hits;
+          localStorage.setItem("images", JSON.stringify(images));
+          setData();
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [panelSearchInputText]);
+
+  const setData = () => {
+    let imagesData = JSON.parse(localStorage.getItem("images"));
+    console.log("pixabay images", imagesData);
+    const images = imagesData.map((d, index) => ({
+          src: d.previewURL,
           id:index
         }));
-        console.log("got images", images);
-        setImagesMenuImages(images);
-      });
-  }, []);
+    // setImages(imagesData);
+    setImagesMenuImages(images);
+  };
 
   React.useEffect(() => {
     let stickers = getStickerNames();
@@ -58,19 +91,29 @@ const AppSidebar = ({ pins }) => {
     setSelectedSidebarMenuItem(nextView);
 
     switch(nextView){
-      case "text":
-        addTextElement();
-        break;
+      case "circle":
+        setToolbarCommands([...toolbarCommands,{command:"addCircle", params:{}}])
+      break;
+      case "square":
+        setToolbarCommands([...toolbarCommands,{command:"addSquare", params:{}}])
+      break;
+      case "line":
+        setToolbarCommands([...toolbarCommands,{command:"addLine", params:{}}])
+      break;
+      case "delete":
+        setToolbarCommands([...toolbarCommands,{command:"deleteSelection", params:{}}])
+      break;
       default:
         console.log("unknown toolbar selection 🔴❓❓", view)
     }
 
   };
 
-  const addTextElement = () => {
+  const addTextElement = (font) => {
     let t = "Text";
     console.log("adding text element")
-    setToolbarCommands([...toolbarCommands,{command:"addText", params:t}])
+
+    setToolbarCommands([...toolbarCommands,{command:"addText", params:{font:font}}])
   };
 
   const addImageElement = (image) => {
@@ -88,7 +131,8 @@ const AppSidebar = ({ pins }) => {
   }
 
   const onClickTexts  = (list, index) =>{
-    console.log("clicked texts ", index)
+    console.log("clicked texts ", index, list)
+    addTextElement(list[index])
   }
   
   const onClickImages  = (list, index) =>{
@@ -158,9 +202,9 @@ const AppSidebar = ({ pins }) => {
     break;
 
     case "text":
-      isOpen = false;
-      sidePanel =  <AppToolbarImagesPanel
-      open={false}
+      isOpen = true;
+      sidePanel =  <TextPanel
+      open={true}
       images={[]}
       cellWidth = {70}
       cellHeight = {random(100, 200)}
@@ -214,7 +258,6 @@ const AppSidebar = ({ pins }) => {
       images={rawImagesToObjects(shapes)}
       height = {adjHeight}
       onClick = {onClickShapes}
-      searchPlaceholder = "🔍    search shapes"
     /> ;
       break;
     case "uploads":
@@ -239,9 +282,9 @@ const AppSidebar = ({ pins }) => {
     /> ;
       break;
     default:
-      isOpen = true;
+      isOpen = false;
       sidePanel =  <AppToolbarImagesPanel
-      open={true}
+      open={false}
       cellWidth = {cellWidth}
       cellHeight = {random(100, 200)}
       images={imagesMenuImages}
@@ -262,12 +305,12 @@ const AppSidebar = ({ pins }) => {
       < AppSideToolbar buttons = {BASE_BUTTONS} view = {view} onChange={handleToolbaarChange}/>
 
       {sidePanel}
-
+      
       <div >
-        
-        <div  className="workspace" id="workspace"  style={{  'margin-top': '10px' , 'margin-right': '20px' ,'background-color': '#eee','border-radius': '15px 15px 15px 15px','box-shadow': '5px 5px 7px -7px rgba(f, f, f, 0.75)', 'width': `${width - sidebarSize -100 }px`, 'height': `${adjHeight-50}px`}} >
-        {/* <Topbar  /> */}
+        <div  className="workspace" id="workspace"  style={{  'marginTop': '10px' , 'marginRight': '20px' ,'backgroundColor': '#eee','borderRadius': '15px 15px 15px 15px','boxShadow': '5px 5px 7px -7px rgba(f, f, f, 0.75)', 'width': `${width - sidebarSize -100 }px`, 'height': `${adjHeight-50}px`}} >
+        <Topbar  />
          <AppCanvas width={ `${width - sidebarSize -100 }px`} height={`${adjHeight-50}px`}  />
+         <Bottombar  />
         </div>
 
       </div>

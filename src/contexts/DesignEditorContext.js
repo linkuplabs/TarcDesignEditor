@@ -13,6 +13,9 @@ export function DesignEditorProvider(props) {
   const [panelSearchInputText, setPanelSearchInputText] = useState('');
   const [cloudModelImages, setCloudModelImages] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [selectedCanvasObject, setSelectedCanvasObject] =  React.useState({});
+  const [selectedFont, setSelectedFont] =  React.useState({});
+
 
   const value =  {
     searchText,
@@ -31,6 +34,10 @@ export function DesignEditorProvider(props) {
     setPanelSearchInputText,
     cloudModelImages,
     setCloudModelImages,
+    selectedCanvasObject,
+    setSelectedCanvasObject,
+    selectedFont,
+    setSelectedFont
   };
 
   return <DesignEditorContext.Provider value={value}>{children}</DesignEditorContext.Provider>;

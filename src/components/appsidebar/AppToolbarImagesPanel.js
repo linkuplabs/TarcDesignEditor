@@ -4,6 +4,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import classNames from "classnames";
 
 
+import './MessageSender.css';
 import ImagesGallery from "../gallery/ImagesGallery";
 import PanelHeader  from "./PanelHeader";
 
@@ -62,39 +63,23 @@ export const AppToolbarImagesPanel = ({ cellWidth, cellHeight, open,images, heig
     console.log("clicked post ", index)
   }
 
-  // React.useEffect(() => {
-  //   fetch("https://picsum.photos/v2/list?page=2&limit=20")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       const images = data.map((d) => ({
-  //         url: d.download_url
-  //       }));
-  //       setImages(images);
-  //     });
-  // }, []);
 
-  // useEffect(() => {
-  //   firebasedb.collection('posts')
-  //   .onSnapshot(snapshot => {
-  //     let images = snapshot.docs.sort((a, b) => a.data.time > b.data.time ? 1 : -1).map(doc => ( doc.data().imageUrl))
-  //     setImages(images)
-  //   })
-  // }, [])
-  let panelHeader = open ?  <PanelHeader className= {classes.pinContainerOpen } searchPlaceholder={searchPlaceholder} /> : <></>
+  let panelHeader =  <PanelHeader className= {classes.pinContainerOpen } showSearch={true} searchPlaceholder={searchPlaceholder} /> 
 
   return (
     <div>
     
     {panelHeader}
+    
     <PerfectScrollbar
       className={classNames(
         classes.pinContainer,
         open ? classes.pinContainerOpen : classes.pinContainerClose
       )}
-      style={{height:height? height:500,'border-radius': '0px 0px 0px 0px','background-color': '#fff','box-shadow': '0px 5px 7px -7px rgba(0, 0, 0, 0.75)'}}
+      style={{height:height? height:500,'borderRadius': '0px 0px 0px 0px','backgroundColor': '#fff','boxShadow': '0px 5px 7px -7px rgba(0, 0, 0, 0.75)'}}
     >
 
-    <ImagesGallery cellWidth ={cellWidth} cellHeight={cellHeight} images={images} onClick={onClick}/> 
+    <ImagesGallery cellWidth ={cellWidth} cell0Height={cellHeight} images={images} onClick={onClick}/> 
     </PerfectScrollbar>
     </div>
   );
