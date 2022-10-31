@@ -14,11 +14,13 @@ import AppToolbarImagesPanel  from "./AppToolbarImagesPanel";
 import TextPanel  from "./TextPanel";
 import UploaderPanel  from "./UploaderPanel";
 import SettingsPanel  from "./SettingsPanel";
+import TemplatesPanel  from "./TemplatesPanel";
 import AppCanvas from "./AppCanvas";
 import Topbar from "./toolbars/topbar";
 import Bottombar from "./toolbars/bottombar";
 
-import getStickerNames from "./stickers/stickersSrc";
+import getStickerNames from "./stickersSrc";
+import {pixabay} from "../../store/store"
 
 import "./AppSidebar.css"
 
@@ -54,11 +56,11 @@ const AppSidebar = ({ pins }) => {
   // }, []);
 
   React.useEffect(() => {
-    let api_key = "30770841-415e7a8e674354c7d780eca15";
+
     if (searchedKeyword !== "") {
       axios
         .get(
-          `https://pixabay.com/api/?key=${api_key}&q=${panelSearchInputText}&image_type=photo&min_width=500px&min_height=500px`
+          `https://pixabay.com/api/?key=${pixabay.api_key}&q=${panelSearchInputText}&image_type=photo&min_width=500px&min_height=500px`
         )
         .then((res) => {
           let images = res.data.hits;
@@ -186,18 +188,21 @@ const AppSidebar = ({ pins }) => {
 
   var sidePanel;
   const cellWidth = 100;
+
+
+  
   switch(view){
 
   case "templates":
     isOpen = true;
-    sidePanel =  <AppToolbarImagesPanel
+    sidePanel =  <TemplatesPanel
     open={true}
     cellWidth = {cellWidth}
-    cellHeight = {random(100, 300)}
+    cellHeight = {random(90, 300)}
     images={imagesMenuImages}
     height = {adjHeight}
     onClick = {onClickImages}
-    searchPlaceholder = "🔍 search images"
+    searchPlaceholder = "🔍 search templates"
   /> ;
     break;
 
@@ -221,6 +226,7 @@ const AppSidebar = ({ pins }) => {
       images={imagesMenuImages}
       height = {adjHeight}
       onClick = {onClickImages}
+      showPixaby = {true}
       searchPlaceholder = "🔍 search images"
     /> ;
         break;
@@ -293,6 +299,7 @@ const AppSidebar = ({ pins }) => {
       searchPlaceholder = "🔍 search templates"
     /> ;
     console.log("unknown toolbar selection 🔴❓❓", view)
+
   }
 
   

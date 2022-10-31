@@ -1,6 +1,10 @@
 .AppCanvas {
   font-family: sans-serif;
   text-align: center;
+  align-items: center;
+  justify-content: center;
+
+  
 }
 
 .sample-canvas {
@@ -11,7 +15,8 @@
   background: rgba(247, 247, 247, 0.75);
   display: flex;
   /* margin-left: 20; */
-
+  position: 'absolute';
+  margin-left: 40px;
 }
 
 pre {

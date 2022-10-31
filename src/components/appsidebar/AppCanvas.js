@@ -4,6 +4,8 @@ import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { fabric } from "fabric";
 import {DesignEditorContext } from '../../contexts/DesignEditorContext';
 
+import {getKeyboardCommand } from './Keypress';
+
 import "./AppCanvas.css";
 
 export const isImage = (obj) =>{
@@ -33,13 +35,21 @@ export const isCircle = (obj) =>{
   }
 }
 
+var state;
+  // past states
+var undo = [];
+  // reverted states
+var redo = [];
+
+var copyObject;
 
 export default function AppCanvas() {
   const { editor, onReady } = useFabricJSEditor();
   const [data, setData] = React.useState("");
   const [selectionClearedActive, setSelectionClearedActive] = React.useState(false);
-  
-  
+  // const [copyObject, setCopyObject] = React.useState({});
+
+
 
 
   const {
@@ -48,8 +58,69 @@ export default function AppCanvas() {
     selectedCanvasObject,
     setSelectedCanvasObject,
     selectedFont,
-    setSelectedFont
+    setSelectedFont,
+    setSavedSVGData,
+    setSavedJSONData,
+    zoomValue,
+    setZoomValue,
+    zoomSliderChanged,
+    setZoomSliderChanged,
+    redoList,
+    setRendoList,
+    undoList,
+    setUndoList,
+    undoEnabled,
+    setUndoEnabled,
+    redoEnabled,
+    setRedoEnabled,
+    currentScene,
+    setCurrentScene,
+
   } = useContext(DesignEditorContext);
+
+
+  React.useEffect(() => {
+    if(!editor || !editor.canvas )return
+
+    const value = zoomSliderChanged;
+
+
+
+    // if (value < 0) {
+    //   editor.canvas.setZoom(zoomMin / 100);
+    // } else if (value > zoomMax) {
+    //   editor.canvas.setZoom(zoomMax / 100);
+    // } else {
+     editor.canvas.setZoom(value );
+    // }
+
+  }, [zoomSliderChanged])
+
+  React.useEffect(() => {
+    if(!editor || !editor.canvas )return
+    addSelectionClearedListener(editor)
+
+  }, [editor])
+
+    React.useEffect(() => {
+    if(!editor || !editor.canvas || (JSON.stringify( currentScene) === JSON.stringify({})) )return
+
+    console.log("loading from current scene", currentScene)
+
+    editor.canvas.loadFromJSON(currentScene, function() {
+    editor.canvas.renderAll();
+    setCurrentScene({})
+  });
+
+
+  }, [editor,currentScene])
+
+  // React.useEffect(() => {
+  // setUndoEnabled(undo.length > 0)
+  // setRedoEnabled(redo.length > 0)
+
+
+  // }, [ setUndoEnabled,setRedoEnabled ])
 
   const nullElementSelected = () =>{
     console.log("no elements selected")
@@ -61,8 +132,70 @@ export default function AppCanvas() {
    setSelectedCanvasObject(obj)
 }
 
+function save() {
+  // clear the redo stack
+  redo = [];
+
+  // initial call won't have a state
+  if (state) {
+    undo.push(state);
+  }
+  state = JSON.stringify(editor.canvas);
+
+}
+
+function replay(playStack, saveStack) {
+  saveStack.push(state);
+  state = playStack.pop();
+
+
+  editor.canvas.clear();
+  editor.canvas.loadFromJSON(state, function() {
+    editor.canvas.renderAll();
+  });
+}
+
+const addUndoRedoListener=(editor)=>{
+
+let canvas = editor.canvas;
+  save();
+  canvas.on("object:added", function (e) {
+      save();
+  });
+
+  canvas.on("object:modified", function (e) {
+      save();
+  });
+
+}
+
+function performUndo() {
+  replay(undo, redo);
+
+  setUndoEnabled(undo.length > 0)
+  setRedoEnabled(redo.length > 0)
+  
+}
+
+function performRedo() {
+  replay(redo, undo);
+  setUndoEnabled(undo.length > 0)
+  setRedoEnabled(redo.length > 0)
+}
+
+
+  const addDropSHadow  = (obj) =>{
+      // Create shadow object
+      var shadow = new fabric.Shadow({
+        color: obj.stroke,
+        blur: 30
+    });
+
+    obj.set('shadow', { blur: 15, offsetX: 0, offsetY: 0});
+  }
+
+
   const textElementSelected = (text) =>{
-    console.log("this is the text func")
    
     let obj = {
       object:text,
@@ -78,12 +211,11 @@ export default function AppCanvas() {
       scaleX: text.scaleX,
       scaleY: text.scaleY,
    }
-   console.log("text properties", obj)
+
    setSelectedCanvasObject(obj)
 }
 
   const imageElementSelected = (img) =>{
-      console.log("this is the image func", img)
      
       let obj = {
         object:img,
@@ -96,7 +228,7 @@ export default function AppCanvas() {
         scaleX: img.scaleX,
         scaleY: img.scaleY,
      }
-     console.log("text properties", obj)
+
      setSelectedCanvasObject(obj)
   }
 
@@ -149,20 +281,89 @@ export default function AppCanvas() {
 
   const addSelectionClearedListener =(editor) => {
     if(selectionClearedActive){
-      console.log("selection cleared already active, aborting...");
        return 
     }
+
+    addUndoRedoListener(editor)
+
     editor.canvas.on('selection:cleared', function() {  
       console.log("selection cleared");
       nullElementSelected()
     });
+
+    editor.canvas.on('mouse:wheel', function(opt) {
+      var delta = opt.e.deltaY;
+      var zoom = editor.canvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.01) zoom = 0.01;
+      editor.canvas.setZoom(zoom);
+      setZoomValue(zoom.toFixed(2));
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    })
+
+    document.body.addEventListener('keyup',function(opt) {
+      let command = getKeyboardCommand(opt);
+      if(command.command !== "unused"){
+        setToolbarCommands([...toolbarCommands,command])
+      }
+    })
+
+    document.body.addEventListener('copy',function(opt) {
+      console.log("copySelected", opt)
+      editor.canvas.getActiveObject().clone(function(cloned) {
+        if(cloned){
+          console.log("cloning...", cloned)
+          // setCopyObject(cloned)
+          copyObject = cloned;
+        }
+
+      });
+      // console.log("copySelected", activeObject)
+      // if(activeObject){
+      //   console.log("copying...", activeObject)
+      //   setCopyObject(activeObject)
+      // }
+    })
+    document.body.addEventListener('paste',function(opt) {
+      console.log("paste selected")
+      console.log("pasteSelected", opt)
+      copyObject.clone(function(clonedObj) {
+        editor.canvas.discardActiveObject();
+        clonedObj.set({
+          left: clonedObj.left + 10,
+          top: clonedObj.top + 10,
+          evented: true,
+        });
+        if (clonedObj.type === 'activeSelection') {
+          // active selection needs a reference to the canvas.
+          clonedObj.canvas = editor.canvas;
+          clonedObj.forEachObject(function(obj) {
+            editor.canvas.add(obj);
+          });
+          // this should solve the unselectability
+          clonedObj.setCoords();
+        } else {
+          editor.canvas.add(clonedObj);
+        }
+        copyObject.top += 10;
+        copyObject.left += 10;
+        editor.canvas.setActiveObject(clonedObj);
+        editor.canvas.requestRenderAll();
+      });
+    })
+
+
     
     setSelectionClearedActive(true)
   }
+
   
   React.useEffect(() => {
     if(toolbarCommands.length > 0){
       console.log("effect handling new commands",toolbarCommands)
+
       toolbarCommands.forEach((ele, ind) => {
         switch(ele.command){
           case "addText":
@@ -208,7 +409,30 @@ export default function AppCanvas() {
             case "textProperty":
               textProperty(ele.params);
             break;
-
+            case "objectProperty":
+              objectProperty(ele.params);
+            break;
+            case "saveToJSON":
+              toJSON();
+            break;
+            case "saveToSVG":
+              toSVG();
+            break;
+            case "saveToPNG":
+              toPNG();
+            break;
+            case "undo":
+              performUndo();
+            break;
+            case "redo":
+              performRedo();
+            break;
+            case "sendToBack":
+              sendSelectedObjectBack();
+            break;
+            case "sendToFront":
+              sendSelectedObjectToFront();
+            break;
             default:
               console.log("unhandled command ", ele);
               break;
@@ -226,7 +450,7 @@ export default function AppCanvas() {
         // editor.canvas.on('selection:cleared', function() {  
         //   console.log("selection cleared sticker");
         // });
-        addSelectionClearedListener(editor)
+        // addSelectionClearedListener(editor)
       }
     );
   };
@@ -250,7 +474,7 @@ export default function AppCanvas() {
     // editor.canvas.on('selection:cleared', function() {  
     //   console.log("selection cleared text");
     // });
-    addSelectionClearedListener(editor)
+    // addSelectionClearedListener(editor)
     editor.canvas.add(text);
 
   };
@@ -268,7 +492,7 @@ const addBackground = (img) => {
         // editor.canvas.on('selection:cleared', function() {  
         //   console.log("selection cleared bg");
         // });
-        addSelectionClearedListener(editor)
+        // addSelectionClearedListener(editor)
      });
 
 };
@@ -306,6 +530,42 @@ function changeTextAlignment( val){
   }
  }
 
+ function objectProperty(param){
+  let object = editor.canvas.getActiveObject()
+  if(!object)return
+  console.log("text object?",object);
+
+  console.log("setting text property", param)
+  object.set(param.key,param.value);
+  editor.canvas.renderAll();
+  
+ }
+
+function sendSelectedObjectBack(param){
+  // let selectedObject = editor.canvas.getActiveObject()
+  // if(!selectedObject)return 
+  // console.log("sending to back")
+  // editor.canvas.sendToBack(selectedObject);
+  // editor.canvas.renderAll();
+
+  var activeObjects = editor.canvas.getActiveObjects();
+  if(!activeObjects)return
+  activeObjects.forEach (function(object) {
+    editor.canvas.sendToBack(object);
+    editor.canvas.renderAll();
+  })
+}
+
+function sendSelectedObjectToFront(param) {
+  var activeObjects = editor.canvas.getActiveObjects();
+  if(!activeObjects)return
+  activeObjects.forEach (function(object) {
+    console.log("sending to front")
+    editor.canvas.bringToFront(object);
+    editor.canvas.renderAll();
+  })
+}
+
 const onDeleteSelection = () => {
   console.log('deleting editor...', editor);
   console.log('deleting editor canvas...', editor.canvas);
@@ -331,21 +591,85 @@ const deleteSelected = () => {
     w.document.write(image.outerHTML);
   };
 
+  const loadFromJSON=(json)=>{
+    editor.canvas.loadFromJSON(json, function() {
+    editor.canvas.renderAll(); 
+    },function(o,object){
+        console.log(o,object)
+    })
+
+  }
 
   const toSVG = () => {
     const svg = editor.canvas.toSVG();
     console.log(svg);
     setData(svg);
+    setSavedSVGData(svg);
   };
   const toJSON = () => {
     const json = editor.canvas.toJSON();
     const data = JSON.stringify(json);
-    console.log(data);
+    console.log("JSONData",data);
     setData(data);
+    setSavedJSONData(data);
   };
 
+  const toPNG = () => {
+    // var png = editor.canvas.toPNG();
+    // saveFile( "tde.png",png);
+    // downloadImage()
+    let canvas = editor.canvas;
+
+    const dataURL = canvas.toDataURL({
+      width: canvas.width,
+      height: canvas.height,
+      left: 0,
+      top: 0,
+      format: 'png',
+    });
+    const link = document.createElement('a');
+    link.download = 'image.png';
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+
+    canvas.getElement().toBlob(function(blob) {
+      // saveAs(blob, "canvas.png");
+      console.log("blob to export", blob)
+      saveFile(blob, "tde.png")
+    });
+
+  }
+
+  const saveFile = async (blob, filename) => {
+    console.log("saving png", filename);
+    const fileHandle = await window.showSaveFilePicker();
+    const fileStream = await fileHandle.createWritable();
+
+    var stream = editor.canvas.createPNGStream();
+    stream.on('data', function(chunk) {
+    fileStream.write(chunk);
+});
+
+  };
+
+  const downloadImage = () => {
+    const ext = "png";
+    const base64 = editor.canvas.toDataURL({
+      format: ext,
+      enableRetinaScaling: true
+    });
+    const link = document.createElement("a");
+    link.href = base64;
+    link.download = `eraser_example.${ext}`;
+    link.click();
+  };
+
+
   return (
-    <div className="AppCanvas">
+    <div className="AppCanvas" >
       {/* <h1>Tarc Design Editor</h1> */}
       {/* <button className="primary-insta-btn" onClick={toSVG}>toSVG</button>
       <button className="primary-insta-btn" onClick={toJSON}>toJSON</button> */}

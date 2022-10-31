@@ -15,7 +15,13 @@ export function DesignEditorProvider(props) {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [selectedCanvasObject, setSelectedCanvasObject] =  React.useState({});
   const [selectedFont, setSelectedFont] =  React.useState({});
-
+  const [savedSVGData, setSavedSVGData] = React.useState("");
+  const [savedJSONData, setSavedJSONData] = React.useState("");
+  const [zoomValue, setZoomValue] = React.useState(1)
+  const [zoomSliderChanged, setZoomSliderChanged] = React.useState(1)
+  const [ undoEnabled, setUndoEnabled ] =  React.useState(true);
+  const [ redoEnabled, setRedoEnabled ] =  React.useState(true);
+  const [currentScene, setCurrentScene] =  useState({});
 
   const value =  {
     searchText,
@@ -37,7 +43,22 @@ export function DesignEditorProvider(props) {
     selectedCanvasObject,
     setSelectedCanvasObject,
     selectedFont,
-    setSelectedFont
+    setSelectedFont,
+    savedSVGData,
+    setSavedSVGData,
+    savedJSONData,
+    setSavedJSONData,
+    zoomValue,
+    setZoomValue,
+    zoomSliderChanged,
+    setZoomSliderChanged,
+    undoEnabled,
+    setUndoEnabled,
+    redoEnabled,
+    setRedoEnabled,
+    currentScene,
+    setCurrentScene,
+
   };
 
   return <DesignEditorContext.Provider value={value}>{children}</DesignEditorContext.Provider>;

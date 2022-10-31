@@ -3,6 +3,9 @@ import { styled } from '@mui/material/styles';
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import FlipToBackIcon from '@mui/icons-material/FlipToBack';
+import FlipToFrontIcon from '@mui/icons-material/FlipToFront';
+
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -40,7 +43,16 @@ import {isText} from "../AppCanvas";
 import { SketchPicker } from 'react-color';
 
 import { DesignEditorContext } from '../../../contexts/DesignEditorContext';
+import OpacityIcon from '@mui/icons-material/Opacity';
 
+import Box from '@mui/material/Box';
+
+import PropTypes from 'prop-types';
+
+import Fade from '@mui/material/Fade';
+import Slider, { SliderThumb, SliderValueLabelProps } from '@mui/material/Slider';
+
+import {PrettoSlider} from "./bottombar";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
@@ -94,6 +106,11 @@ export default function Topbar() {
   const [colorAnchor, setColorAnchor] = React.useState(null);
   const [color,setColor] = React.useState("black");
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
+  const [opacity, setOpacity] = React.useState(1);
+  const [fontSize, setFontSize] = React.useState(30);
+
 
   const {
     setSelectedSidebarMenuItem,
@@ -110,13 +127,36 @@ export default function Topbar() {
       setIsUnderline(false);
       setIsBold(false)
       setIsItalic(false)
-      return; 
+      
     }
 
-    setIsUnderline(selectedCanvasObject.object.underline);
-    setIsBold(selectedCanvasObject.object.fontWeight === "bold");
-    setIsItalic(selectedCanvasObject.object.fontStyle === "italic");
-    setColor(selectedCanvasObject.object.fill);
+    if( selectedCanvasObject.type === "nullElement"){ 
+      console.log("nothing selected. clearing ... !!", selectedCanvasObject);
+      setOpen(false)
+      return
+    }
+    
+    if( selectedCanvasObject.type === "text"){ 
+      setIsUnderline(selectedCanvasObject.object.underline);
+      setIsBold(selectedCanvasObject.object.fontWeight === "bold");
+      setIsItalic(selectedCanvasObject.object.fontStyle === "italic");
+      setAlignment(selectedCanvasObject.object.textAlign)
+      setFontSize(selectedCanvasObject.object.fontSize)
+      return
+    }
+
+    if( selectedCanvasObject.type !== "image"){ 
+      // setIsUnderline(selectedCanvasObject.object.underline);
+      // setIsBold(selectedCanvasObject.object.fontWeight === "bold");
+      // setIsItalic(selectedCanvasObject.object.fontStyle === "italic");
+      // setAlignment(selectedCanvasObject.object.textAlign)
+
+    // setColor(selectedCanvasObject.object.stroke);
+    // setOpacity(selectedCanvasObject.object.opacity)
+    }
+
+
+    
 
   },[selectedCanvasObject])
 
@@ -155,11 +195,46 @@ export default function Topbar() {
     setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"fontStyle",value:val}}])
   }
 
+  const handleOpacity = (e) => {
+    if(! selectedCanvasObject.object){ return; }
+    let val = selectedCanvasObject.object.opacity * 0.9;
+    console.log("handl opacity !!");
+   
+    setAnchorEl(e.currentTarget);
+    setOpen((previousOpen) => !previousOpen);
+
+  
+  }
+
+  const handleOpacityChange = (type, value) => {
+    if(! selectedCanvasObject.object){ return; }
+    let val = value;
+    if(isNaN(val))return;
+    console.log("changed opacity !!");
+
+    setOpacity(value)
+    setToolbarCommands([...toolbarCommands,{command:"objectProperty", params:{key:"opacity",value:val}}])
+
+  }
+
+
   const handleUnderline = () => {
     if( selectedCanvasObject.type !== "text"){ return; }
     console.log("handle underline !!");
     let val = !selectedCanvasObject.object.underline;
     setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"underline",value:val}}])
+  }
+
+  const handleToBack = () => {
+    if( selectedCanvasObject.type === "nullElement"){ return; }
+    console.log("to back !!");
+    setToolbarCommands([...toolbarCommands,{command:"sendToBack", params:{}}])
+  }
+
+  const handleToFront = () => {
+    if( selectedCanvasObject.type === "nullElement"){ return; }
+    console.log("to back !!");
+    setToolbarCommands([...toolbarCommands,{command:"sendToFront", params:{}}])
   }
 
   const colorOpenClick = (e) => {
@@ -168,14 +243,27 @@ export default function Topbar() {
   };
   const colorSelect = (v) => {
     // anchor.style.color = v;
+    console.log("object", selectedCanvasObject)
     setColor(v);
+    if( selectedCanvasObject.type === "nullElement"){ return; }
+    if( selectedCanvasObject.type === "text"){ 
     setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"stroke",value:v}}])
     setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"fill",value:v}}])
+    }else{
+      setToolbarCommands([...toolbarCommands,{command:"objectProperty", params:{key:"stroke",value:v}}])
+    }
   };
 
   const fontChange = (v) => {
     //anchor.style.fontFamily = v;
     setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"fontFamily",value:v}}])
+  };
+  
+
+  const fontSizeChange = (v) => {
+    //anchor.style.fontFamily = v;
+    setFontSize(v)
+    setToolbarCommands([...toolbarCommands,{command:"textProperty", params:{key:"fontSize",value:v}}])
   };
 
   let fontFam = (selectedCanvasObject.type === "text") ? selectedCanvasObject.object.fontFamily : fonts[0].value ;
@@ -184,14 +272,7 @@ export default function Topbar() {
     <div>
        <Stack direction="row" spacing={8}>
 
-       {/* <TextStyleBar
-        open={true}
-        anchor={textAnchor}
-        onClose={() => setTextAnchor(null)}
-        currentTextData={currentTextData}
-        setCurrentTextData={setCurrentTextData}
-      /> */}
-
+        <Box>
         <TextField
           // label="Font Style"
           // value={fontFamily}
@@ -214,11 +295,27 @@ export default function Topbar() {
           ))}
         </TextField>
 
-
-
-
-
-
+        <TextField
+          // label="Font Style"
+          // value="size"
+          variant="outlined"
+          size="small"
+          select
+          value={fontSize.toString()}
+          className={fontClasses.select}
+          // fullWidth
+          onChange={(e) => fontSizeChange(e.target.value)}
+        >
+          {Array.apply(null, {length: 500}).map((item, index) => (
+            <MenuItem
+              key={uuid()}
+              value={index}
+            >
+              {index.toString()}
+            </MenuItem>
+          ))}
+        </TextField>
+          </Box>
         <StyledToggleButtonGroup
           size="small"
           value={formats}
@@ -234,10 +331,7 @@ export default function Topbar() {
           <ToggleButton value="underlined" onClick = {handleUnderline} aria-label="underlined" selected={isUnderline}>
             <FormatUnderlinedIcon />
           </ToggleButton>
-          <ToggleButton value="color" aria-label="color">
-            <FormatColorFillIcon sx={{ color: color }}/>
-            <ArrowDropDownIcon  onClick={colorOpenClick} />
-          </ToggleButton>
+
         </StyledToggleButtonGroup>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
 
@@ -259,9 +353,6 @@ export default function Topbar() {
           <ToggleButton value="right" aria-label="right aligned">
             <FormatAlignRightIcon />
           </ToggleButton>
-          {/* <ToggleButton value="justify" aria-label="justified" disabled>
-            <FormatAlignJustifyIcon />
-          </ToggleButton> */}
         </StyledToggleButtonGroup>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
 
@@ -271,14 +362,52 @@ export default function Topbar() {
         value={"delete"}
         aria-label="device"
       >
+
+        <ToggleButton value="right" aria-label="right aligned">
+            <FlipToBackIcon   onClick = {handleToBack} />
+          </ToggleButton>
+          <ToggleButton value="right" aria-label="right aligned">
+            <FlipToFrontIcon   onClick = {handleToFront}/>
+          </ToggleButton>
+
+        <ToggleButton value="color" aria-label="color">
+            <FormatColorFillIcon sx={{ color: color }}/>
+            <ArrowDropDownIcon  onClick={colorOpenClick} />
+          </ToggleButton>
+          <ToggleButton>
+        < OpacityIcon  onClick = {handleOpacity}  />
+        </ToggleButton>
         <ToggleButton value="delete" aria-label="delete">
           <DeleteOutlineIcon onClick = {handleDelete} />
         </ToggleButton>
       </StyledToggleButtonGroup>
 
+
         </Stack>
       {/* </Paper> */}
 
+      <Popper id="opacity" open={open} anchorEl={anchorEl} transition>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={10}>
+            <Box sx={{  mx: 'auto', bgcolor: '#eee', width:200, borderRadius: 2}}>
+            <Box sx={{  bgcolor: '#eee', width:190, borderRadius: 2}}>
+            <PrettoSlider
+            size="small"
+            valueLabelDisplay="auto"
+            aria-label="pretto slider"
+            defaultValue={1}
+            value={opacity} 
+            onChange={handleOpacityChange}
+            step={0.09}
+            // marks
+            min={0.01}
+            max={1}
+            />
+            </Box>
+            </Box>
+          </Fade>
+        )}
+      </Popper>
 
       <Popover
           open={colorOpen}
@@ -294,25 +423,7 @@ export default function Topbar() {
           }}
         >
           <SketchPicker color={color}  onChangeComplete={ (c)=>colorSelect(c.hex) }/>
-          {/* <Grid container style={{ width: 120 }}>
-            {colors.map((item) => (
-              <Grid key={item} item xs={4}>
-                <Button
-                  className={classes.btn}
-                  onClick={() => colorSelect(item)}
-                >
-                  <div
-                    style={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: 360,
-                      background: item,
-                    }}
-                  />
-                </Button>
-              </Grid>
-            ))}
-          </Grid> */}
+
         </Popover>
     </div>
   );

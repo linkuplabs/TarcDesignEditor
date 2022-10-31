@@ -75,6 +75,20 @@ export default function PanelHeader(props) {
                     <Tab label="Active" />
                   </Tabs>) : <></>
 
+  const pixaby = props.showPixaby ?      ( <div   style={{  
+    justifyContent: "space-evenly",
+    display: "flex",
+    alignSelf: "center",
+    alignItems: "center", 
+    backgroundColor: color}} >
+    <a href="https://pixabay.com" target="_blank">
+         pixabay
+    </a>
+  </div>)
+
+  :
+  <></>
+
   return (
     <div>
       <div   style={{  
@@ -95,17 +109,7 @@ export default function PanelHeader(props) {
           {inputForm}
           
       </div>
-
-      <div   style={{  
-        justifyContent: "space-evenly",
-        display: "flex",
-        alignSelf: "center",
-        alignItems: "center", 
-        backgroundColor: color}} >
-        <a href="https://pixabay.com" target="_blank">
-             pixabay
-        </a>
-      </div>
+        {pixaby}
     </div>
   );
 }
