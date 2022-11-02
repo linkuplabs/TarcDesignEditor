@@ -50,7 +50,7 @@ function PicsUploader(props) {
           ...prevState,
           { id: file.path, src: e.target.result }
         ]);
-        setUploadedImages((prevValue) => [...prevValue, { id: file.path, src: URL.createObjectURL(file) }]);
+        setUploadedImages((prevValue) => [...prevValue, { id: file.path, src: URL.createObjectURL(file), content:URL.createObjectURL(file) }]);
       };
       // Read the file as Data URL (since we accept only images)
       reader.readAsDataURL(file);

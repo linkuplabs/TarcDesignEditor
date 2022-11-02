@@ -20,7 +20,7 @@ import Topbar from "./toolbars/topbar";
 import Bottombar from "./toolbars/bottombar";
 
 import getStickerNames from "./stickersSrc";
-import {pixabay} from "../../store/store"
+import {pixabay} from "../../store/ApiKeys"
 
 import "./AppSidebar.css"
 
@@ -76,6 +76,7 @@ const AppSidebar = ({ pins }) => {
     console.log("pixabay images", imagesData);
     const images = imagesData.map((d, index) => ({
           src: d.previewURL,
+          content: d.largeImageURL,
           id:index
         }));
     // setImages(imagesData);
@@ -119,7 +120,7 @@ const AppSidebar = ({ pins }) => {
   };
 
   const addImageElement = (image) => {
-    console.log("adding image element")
+console.log("adding image element")
     setToolbarCommands([...toolbarCommands,{command:"addImage", params:image}])
   };
 
@@ -140,6 +141,7 @@ const AppSidebar = ({ pins }) => {
   const onClickImages  = (list, index) =>{
     console.log("clicked images ", index)
     let image = list[index]
+
     addImageElement(image)
   }
 
@@ -175,7 +177,7 @@ const AppSidebar = ({ pins }) => {
 
   const rawImagesToObjects = (images) => {
     let objs = images.map( (image, index) => {
-      return {src:image,id:index}
+      return {src:image,id:index, content:image}
     });
     console.log("rawImagesToObjects", objs)
     return objs;

@@ -20,7 +20,7 @@ export default function getStickerNames(){
   var stickerNames = []
   values.forEach((value, index) => {
     let name = process.env.PUBLIC_URL + "/stickers/" +zeroPad(value, 3) + ".png";
-    stickerNames[index]={src:name, id:index};
+    stickerNames[index]={src:name, id:index, content:name};
   })
 
   return stickerNames

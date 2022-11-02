@@ -27,10 +27,24 @@ import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 
 import { Button, KIND, SIZE } from "baseui/button"
 import Slider, { SliderThumb, SliderValueLabelProps } from '@mui/material/Slider';
+import PhotoSizeSelectSmallIcon from '@mui/icons-material/PhotoSizeSelectSmall';
 import Box from '@mui/material/Box';
-
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Dialog from '@mui/material/Dialog';
+import { useTheme } from '@mui/material/styles';
+import CanvasSizer from './CanvasSizer'
 import {RemoveCircleOutline,AddCircleOutline, Undo, Redo, Download, Illustrations} from "../../svgicons/SvgIcons";
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import { MenuItem2, MenuItem2Props } from "@blueprintjs/popover2";
+import {  Menu, MenuDivider} from "@blueprintjs/core";
+import {  MenuItem as MenuItem3} from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
+
+import PermMediaIcon from '@mui/icons-material/PermMedia';
+import Tooltip from '@mui/material/Tooltip';
+
+// import { Example } from "@blueprintjs/docs-theme";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
@@ -92,9 +106,13 @@ export const PrettoSlider = styled(Slider)({
 
 
 export default function Bottombar() {
+  const theme = useTheme();
   const [saver, setSaver] = React.useState("");
   const [ disableUndo, setDisableUndo ] =  React.useState(true);
   const [ disableRedo, setDisableRedo ] =  React.useState(true);
+  const [openSizer, setOpenSizer] = React.useState(false);
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const {
     toolbarCommands, 
@@ -148,7 +166,32 @@ export default function Bottombar() {
       console.log("undoredo",value)
   }
 
+  const handleSizerButton = (event) => {
+    console.log("toggle dialog")
+    setOpenSizer(!openSizer);
+    setToolbarCommands([...toolbarCommands,{command:"resizeCanvas", params:{width:1200, height:1200}}])
+  };
 
+  const handleClick = (event) => {
+
+    setAnchorEl(event.currentTarget);
+    setOpenSizer(!openSizer);
+  };
+  const exampleMenu = (
+  <Menu>
+  <MenuItem3 icon="graph" text="Graph" />
+  <MenuItem3 icon="map" text="Map" />
+  <MenuItem3 icon="th" text="Table" shouldDismissPopover={false} />
+  <MenuItem3 icon="zoom-to-fit" text="Nucleus" disabled={true} />
+  <MenuDivider />
+  <MenuItem3 icon="cog" text="Settings...">
+      <MenuItem3 icon="add" text="Add new application" disabled={true} />
+      <MenuItem3 icon="remove" text="Remove application" />
+  </MenuItem3>
+</Menu>
+);
+
+  
 
   return (
     <div>
@@ -161,16 +204,32 @@ export default function Bottombar() {
           onChange={handleSave}
           aria-label="text alignment"
         >
+        <Tooltip title="Export to SVG" key={"tosvg"}>
         <ToggleButton value="toSVG" aria-label="toSVG">
           <WebAssetIcon />
         </ToggleButton>
+        </Tooltip>
+
+        <Tooltip title="Export to PNG" key={"topng"}>
         <ToggleButton value="toPNG" aria-label="toPNG">
-          <Illustrations   />
+        <PermMediaIcon   />
         </ToggleButton>
+        </Tooltip>
+
+        <Tooltip title="export JSON" key={"tojson"}> 
         <ToggleButton value="toJSON" aria-label="toJSON">
           <Download   />
         </ToggleButton>
+        </Tooltip>
         </StyledToggleButtonGroup>
+
+        <Tooltip title="Resize canvas" key={"resize"}>
+        <ToggleButton >
+        <PhotoSizeSelectSmallIcon  onClick={handleClick}  />
+        </ToggleButton>
+        </Tooltip>
+
+        <Tooltip title="Zoom" key={"topng"}>
         <Box sx={{ width: 300 }}>
 
 
@@ -185,7 +244,9 @@ export default function Bottombar() {
         min={0.1}
         max={10}
       />
+
       </Box>
+      </Tooltip>
 
 
 <StyledToggleButtonGroup
@@ -194,14 +255,38 @@ export default function Bottombar() {
           onChange={handleUndoRedo}
           aria-label="text alignment"
         >
+          <Tooltip title="undo" key={"undo"}>
         <ToggleButton value="undo" aria-label="undo" disabled={disableUndo}>
           <Undo   />
         </ToggleButton>
+        </Tooltip>
+
+        <Tooltip title="redo" key={"redo"}>
         <ToggleButton value="redo" aria-label="redo" disabled={disableRedo}>
           <Redo   />
         </ToggleButton>
+        </Tooltip>
         </StyledToggleButtonGroup>
         </Stack>
+
+
+      {/* <CanvasSizer open={openSizer} handleClose={handleSizerButton}/> */}
+
+      <Popover
+        id={"screenSizes"}
+        open={openSizer}
+        anchorEl={anchorEl}
+        onClose={handleClick}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        {/* <Typography sx={{ p: 2 }}>The content of the Popover.</Typography> */}
+        <CanvasSizer open={openSizer} handleClose={handleSizerButton}/>
+
+      </Popover>
+
     </div>
   );
 }

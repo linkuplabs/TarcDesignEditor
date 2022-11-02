@@ -52,6 +52,8 @@ import PropTypes from 'prop-types';
 import Fade from '@mui/material/Fade';
 import Slider, { SliderThumb, SliderValueLabelProps } from '@mui/material/Slider';
 
+
+
 import {PrettoSlider} from "./bottombar";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

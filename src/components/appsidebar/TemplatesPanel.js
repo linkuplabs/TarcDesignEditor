@@ -11,8 +11,8 @@ import { makeStyles} from "@material-ui/core";
 import {DesignEditorContext } from '../../contexts/DesignEditorContext';
 
 import {SAMPLE_TEMPLATES, NATIVE_TEMPLATES } from './templates/Templates';
-import {postermywall} from "../../store/store"
 
+import {postermywall} from "../../store/ApiKeys";
 
 export const useStyles = makeStyles((theme) => ({
   pinContainer: {
@@ -91,7 +91,7 @@ export const TemplatesPanel = ({ cellWidth, cellHeight, open,images, height, onC
 
   React.useEffect(() => {
     let images = NATIVE_TEMPLATES.map( (template, index) => {
-      return {src:template.preview,id:index}
+      return {src:template.preview,id:index, content:template}
     });
 
     setImageUrls(images)
@@ -118,6 +118,7 @@ export const TemplatesPanel = ({ cellWidth, cellHeight, open,images, height, onC
         console.log("got templates", data);
         const images = data.map((d, index) => ({
           src: d.preview_url,
+          content:d,
           id:index
         }));
         console.log("got templates", images);

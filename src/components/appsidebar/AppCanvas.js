@@ -132,6 +132,12 @@ export default function AppCanvas() {
    setSelectedCanvasObject(obj)
 }
 
+const resizeCanvas = (params) => {
+  editor.canvas.setHeight(params.width);
+  editor.canvas.setWidth( params.height);
+  editor.canvas.renderAll();
+}
+
 function save() {
   // clear the redo stack
   redo = [];
@@ -428,10 +434,13 @@ function performRedo() {
               performRedo();
             break;
             case "sendToBack":
-              sendSelectedObjectBack();
+              sendSelectedObjectBackwards();
             break;
             case "sendToFront":
-              sendSelectedObjectToFront();
+              bringSelectedObjectToForward();
+            break;
+            case "resizeCanvas":
+              resizeCanvas(ele.params);
             break;
             default:
               console.log("unhandled command ", ele);
@@ -444,13 +453,10 @@ function performRedo() {
 
   const addSticker = (image) => {
     console.log("adding sticker ",image);
-    fabric.Image.fromURL( image.src, (img) => {
+    let src = image.content ? image.content : image.src;
+    fabric.Image.fromURL( src, (img) => {
         editor.canvas.add(img);
         img.on('selected', function() {  imageElementSelected(img); }); 
-        // editor.canvas.on('selection:cleared', function() {  
-        //   console.log("selection cleared sticker");
-        // });
-        // addSelectionClearedListener(editor)
       }
     );
   };
@@ -471,29 +477,23 @@ function performRedo() {
         fontSize: 45
     });
     text.on('selected', function() {  textElementSelected(text); });
-    // editor.canvas.on('selection:cleared', function() {  
-    //   console.log("selection cleared text");
-    // });
-    // addSelectionClearedListener(editor)
     editor.canvas.add(text);
 
   };
 
 
-const addBackground = (img) => {
-  console.log("adding background ",img);
-     fabric.Image.fromURL(img.src, (img) => {
-        // add background image
-        editor.canvas.setBackgroundImage(img, editor.canvas.renderAll.bind(editor.canvas), {
-           scaleX: editor.canvas.width / img.width,
-           scaleY: editor.canvas.height / img.height
-        });
+const addBackground = (image) => {
+  console.log("adding background ",image);
+  let src = image.content ? image.content : image.src;
 
-        // editor.canvas.on('selection:cleared', function() {  
-        //   console.log("selection cleared bg");
-        // });
-        // addSelectionClearedListener(editor)
-     });
+
+  fabric.Image.fromURL(src, function (img) {   
+    editor.canvas.setBackgroundImage(img, editor.canvas.renderAll.bind(editor.canvas), {
+      scaleX: editor.canvas.width / img.width,
+      scaleY: editor.canvas.height / img.height
+    });
+  }, {crossOrigin: 'anonymous'}
+  );
 
 };
 
@@ -504,7 +504,6 @@ function textProperty(param){
   if (isText(text)){
     console.log("setting text property", param)
     text.set(param.key,param.value);
-    // editor.canvas.setActiveObject(text);
     editor.canvas.renderAll();
   }
  }
@@ -514,7 +513,6 @@ function textProperty(param){
   console.log("text object?",text);
   if (isText(text)){
     text.set('fontWeight',"bold");
-    editor.canvas.setActiveObject(text);
     editor.canvas.renderAll();
   }
  }
@@ -525,7 +523,6 @@ function changeTextAlignment( val){
   console.log("text object?",text);
   if (isText(text)){
     text.set('textAlign',val);
-    editor.canvas.setActiveObject(text);
     editor.canvas.renderAll();
   }
  }
@@ -533,7 +530,6 @@ function changeTextAlignment( val){
  function objectProperty(param){
   let object = editor.canvas.getActiveObject()
   if(!object)return
-  console.log("text object?",object);
 
   console.log("setting text property", param)
   object.set(param.key,param.value);
@@ -542,12 +538,6 @@ function changeTextAlignment( val){
  }
 
 function sendSelectedObjectBack(param){
-  // let selectedObject = editor.canvas.getActiveObject()
-  // if(!selectedObject)return 
-  // console.log("sending to back")
-  // editor.canvas.sendToBack(selectedObject);
-  // editor.canvas.renderAll();
-
   var activeObjects = editor.canvas.getActiveObjects();
   if(!activeObjects)return
   activeObjects.forEach (function(object) {
@@ -562,6 +552,26 @@ function sendSelectedObjectToFront(param) {
   activeObjects.forEach (function(object) {
     console.log("sending to front")
     editor.canvas.bringToFront(object);
+    editor.canvas.renderAll();
+  })
+}
+
+function sendSelectedObjectBackwards(param){
+  var activeObjects = editor.canvas.getActiveObjects();
+  if(!activeObjects)return
+  console.log("sending backwards")
+  activeObjects.forEach (function(object) {
+    editor.canvas.sendBackwards(object, true);
+    editor.canvas.renderAll();
+  })
+}
+
+function bringSelectedObjectToForward(param) {
+  var activeObjects = editor.canvas.getActiveObjects();
+  if(!activeObjects)return
+  console.log("bringing forward")
+  activeObjects.forEach (function(object) {
+    editor.canvas.bringForward(object,true);
     editor.canvas.renderAll();
   })
 }
