@@ -7,6 +7,7 @@ import {DesignEditorContext } from '../../contexts/DesignEditorContext';
 import {getKeyboardCommand } from './Keypress';
 
 import "./AppCanvas.css";
+import SaveDialog from "./save/SaveDialog";
 
 export const isImage = (obj) =>{
   if(obj && obj._element && (obj._element.className === "canvas-img")){
@@ -47,6 +48,8 @@ export default function AppCanvas() {
   const { editor, onReady } = useFabricJSEditor();
   const [data, setData] = React.useState("");
   const [selectionClearedActive, setSelectionClearedActive] = React.useState(false);
+  const [openSaveContent, setOpenSaveContent]  = React.useState(false);
+  const [saveTitle, setSaveTitle]  = React.useState("");
   // const [copyObject, setCopyObject] = React.useState({});
 
 
@@ -381,6 +384,9 @@ function performRedo() {
             case "addBackground":
             addBackground(ele.params);
             break;
+            case "setBackgroundColor":
+              setBackgroundColor(ele.params);
+            break;
             case "addCircle":
               var circle = new fabric.Circle({ radius: 75, stroke:'red' ,fill: null  });
               editor.canvas.add(circle);
@@ -496,6 +502,18 @@ const addBackground = (image) => {
   );
 
 };
+
+
+const setBackgroundColor = (color) => {
+  console.log("setting background color  ",color);
+
+  editor.canvas.setBackgroundImage(null, editor.canvas.renderAll.bind(editor.canvas));
+
+    editor.canvas.backgroundColor=color;
+    editor.canvas.renderAll();
+
+  
+}
 
 
 function textProperty(param){
@@ -614,7 +632,9 @@ const deleteSelected = () => {
     const svg = editor.canvas.toSVG();
     console.log(svg);
     setData(svg);
+    setSaveTitle("SVG:")
     setSavedSVGData(svg);
+    setOpenSaveContent(true)
   };
   const toJSON = () => {
     const json = editor.canvas.toJSON();
@@ -622,6 +642,8 @@ const deleteSelected = () => {
     console.log("JSONData",data);
     setData(data);
     setSavedJSONData(data);
+    setSaveTitle("JSON:")
+    setOpenSaveContent(true)
   };
 
   const toPNG = () => {
@@ -678,13 +700,31 @@ const deleteSelected = () => {
   };
 
 
+  const handleSaveClose = () => {
+    
+    setOpenSaveContent(! openSaveContent)
+  }
+
+
   return (
-    <div className="AppCanvas" >
-      {/* <h1>Tarc Design Editor</h1> */}
-      {/* <button className="primary-insta-btn" onClick={toSVG}>toSVG</button>
-      <button className="primary-insta-btn" onClick={toJSON}>toJSON</button> */}
+    <div className="AppCanvas"  
+    // style={{
+    //     position: 'absolute', left: '50%', top: '50%',
+    //     transform: 'translate(-50%, -50%)'
+    // }}
+
+    style={{
+      display: "flex",
+      flexFlow: "row" ,
+      justifySelf: "center",
+      alignSelf: "center",
+      minWidth:400
+    }}
+
+    >
       <FabricJSCanvas className="sample-canvas" onReady={onReady} />
-      <pre>{data}</pre>
+      {/* <pre>{data}</pre> */}
+        <SaveDialog open={openSaveContent} title={saveTitle} data={data} handleClose={handleSaveClose}/>
     </div>
   );
 }

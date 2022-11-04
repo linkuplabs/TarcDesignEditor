@@ -43,6 +43,10 @@ import { Popover2 } from "@blueprintjs/popover2";
 
 import PermMediaIcon from '@mui/icons-material/PermMedia';
 import Tooltip from '@mui/material/Tooltip';
+import RedoIcon from '@mui/icons-material/Redo';
+import UndoIcon from '@mui/icons-material/Undo';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import LayersIcon from '@mui/icons-material/Layers';
 
 // import { Example } from "@blueprintjs/docs-theme";
 
@@ -194,9 +198,9 @@ export default function Bottombar() {
   
 
   return (
-    <div>
+     <div>
 
-       <Stack direction="row" spacing={8}>
+       <Stack direction="row" spacing={8}  justifyContent="center" alignItems="center" >
         <StyledToggleButtonGroup
           size="string"
           value={saver}
@@ -218,19 +222,19 @@ export default function Bottombar() {
 
         <Tooltip title="export JSON" key={"tojson"}> 
         <ToggleButton value="toJSON" aria-label="toJSON">
-          <Download   />
+          <SaveAltIcon   />
         </ToggleButton>
         </Tooltip>
         </StyledToggleButtonGroup>
 
         <Tooltip title="Resize canvas" key={"resize"}>
-        <ToggleButton >
+        {/* <ToggleButton > */}
         <PhotoSizeSelectSmallIcon  onClick={handleClick}  />
-        </ToggleButton>
+        {/* </ToggleButton> */}
         </Tooltip>
 
         <Tooltip title="Zoom" key={"topng"}>
-        <Box sx={{ width: 300 }}>
+        <Box sx={{ width: 220 }}>
 
 
         <PrettoSlider
@@ -248,6 +252,12 @@ export default function Bottombar() {
       </Box>
       </Tooltip>
 
+      <Tooltip title="layers" key={"layers"}>
+        {/* <ToggleButton > */}
+        <LayersIcon  onClick={handleClick}  />
+        {/* </ToggleButton> */}
+        </Tooltip>
+
 
 <StyledToggleButtonGroup
           size="string"
@@ -257,17 +267,17 @@ export default function Bottombar() {
         >
           <Tooltip title="undo" key={"undo"}>
         <ToggleButton value="undo" aria-label="undo" disabled={disableUndo}>
-          <Undo   />
+          <UndoIcon   />
         </ToggleButton>
         </Tooltip>
 
         <Tooltip title="redo" key={"redo"}>
         <ToggleButton value="redo" aria-label="redo" disabled={disableRedo}>
-          <Redo   />
+          <RedoIcon   />
         </ToggleButton>
         </Tooltip>
         </StyledToggleButtonGroup>
-        </Stack>
+
 
 
       {/* <CanvasSizer open={openSizer} handleClose={handleSizerButton}/> */}
@@ -284,10 +294,9 @@ export default function Bottombar() {
       >
         {/* <Typography sx={{ p: 2 }}>The content of the Popover.</Typography> */}
         <CanvasSizer open={openSizer} handleClose={handleSizerButton}/>
-
       </Popover>
-
-    </div>
+      </Stack>
+     </div> 
   );
 }
 

@@ -19,7 +19,7 @@ export default function ImagesGallery(props) {
   }
 
   let color = "#fff";
-  //let color="#00abc0"
+  // let color="#00abc0"
 
   return (
     <div   style={{ backgroundColor: color}} >

@@ -4,6 +4,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import { DesignEditorContext } from '../../contexts/DesignEditorContext';
+import ColorPanelHeader from "./ColorPanelHeader";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -88,9 +89,19 @@ export default function PanelHeader(props) {
 
   :
   <></>
-
+  const colorBar = props.onColorChange ? <ColorPanelHeader onColorChange = {props.onColorChange}/> :<></>
   return (
     <div>
+
+<     div   style={{  
+        justifyContent: "space-evenly",
+        display: "flex",
+        alignSelf: "center",
+        alignItems: "center", 
+        backgroundColor: color}} >
+          {colorBar}
+      </div>
+
       <div   style={{  
         justifyContent: "space-evenly",
         display: "flex",

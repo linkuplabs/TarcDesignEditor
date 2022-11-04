@@ -15,12 +15,14 @@ import TextPanel  from "./TextPanel";
 import UploaderPanel  from "./UploaderPanel";
 import SettingsPanel  from "./SettingsPanel";
 import TemplatesPanel  from "./TemplatesPanel";
+import {LayersPanel}  from "./LayersPanel";
 import AppCanvas from "./AppCanvas";
 import Topbar from "./toolbars/topbar";
 import Bottombar from "./toolbars/bottombar";
 
 import getStickerNames from "./stickersSrc";
-import {pixabay} from "../../store/ApiKeys"
+import {pixabay} from "../../store/ApiKeys";
+
 
 import "./AppSidebar.css"
 
@@ -150,6 +152,11 @@ console.log("adding image element")
     let image = list[index]
     addBackground(image)
   }
+  const onBackgroundColorChange  = (color) =>{
+    console.log("background color change ", color)
+    // addBackground(image)
+     setToolbarCommands([...toolbarCommands,{command:"setBackgroundColor", params:color}])
+  }
 
   const onClickShapes  = (list, index) =>{
     console.log("clicked shapes ", index)
@@ -213,7 +220,7 @@ console.log("adding image element")
       sidePanel =  <TextPanel
       open={true}
       images={[]}
-      cellWidth = {70}
+      cellWidth = {cellWidth}
       cellHeight = {random(100, 200)}
       height = {adjHeight}
       onClick = {onClickTexts}
@@ -255,6 +262,7 @@ console.log("adding image element")
       height = {adjHeight}
       onClick = {onClickBackground}
       searchPlaceholder = "🔍 search images"
+      onColorChange = {onBackgroundColorChange}
     /> ;
       break;
     case "shapes":
@@ -289,6 +297,16 @@ console.log("adding image element")
       onClick = {onClickSettings}
     /> ;
       break;
+      case "layers":
+        isOpen = true;
+        sidePanel =  <LayersPanel
+        open={true}
+        cellWidth = {cellWidth}
+        cellHeight = {100}
+        height = {adjHeight}
+        onClick = {onClickSettings}
+      /> ;
+        break;
     default:
       isOpen = false;
       sidePanel =  <AppToolbarImagesPanel
@@ -314,14 +332,14 @@ console.log("adding image element")
       < AppSideToolbar buttons = {BASE_BUTTONS} view = {view} onChange={handleToolbaarChange}/>
 
       {sidePanel}
+
       
       <div >
         <div  className="workspace" id="workspace"  style={{  'marginTop': '10px' , 'marginRight': '20px' ,'backgroundColor': '#eee','borderRadius': '15px 15px 15px 15px','boxShadow': '5px 5px 7px -7px rgba(f, f, f, 0.75)', 'width': `${width - sidebarSize -100 }px`, 'height': `${adjHeight-50}px`}} >
-        <Topbar  />
+        <Topbar   />
          <AppCanvas width={ `${width - sidebarSize -100 }px`} height={`${adjHeight-50}px`}  />
          <Bottombar  />
         </div>
-
       </div>
     </div>
   );

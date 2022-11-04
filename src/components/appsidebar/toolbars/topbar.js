@@ -269,95 +269,96 @@ export default function Topbar() {
   };
 
   let fontFam = (selectedCanvasObject.type === "text") ? selectedCanvasObject.object.fontFamily : fonts[0].value ;
+  
+  const textEditMenu =   <div >
+           <Stack direction="row" spacing={2}   justifyContent="center" alignItems="center">
+                                <TextField
+                                  variant="outlined"
+                                  size="small"
+                                  select
+                                  value={fontFam }
+                                  className={fontClasses.select}
+                                  onChange={(e) => fontChange(e.target.value)}
+                                >
+                                  {fonts.map((item) => (
+                                    <MenuItem
+                                      key={uuid()}
+                                      value={item.value}
+                                      style={{ fontFamily: item.value }}
+                                    >
+                                      {item.name}
+                                    </MenuItem>
+                                  ))}
+                                </TextField>
+
+                                <TextField
+                                  variant="outlined"
+                                  size="small"
+                                  select
+                                  value={fontSize.toString()}
+                                  className={fontClasses.select}
+                                  // fullWidth
+                                  onChange={(e) => fontSizeChange(e.target.value)}
+                                >
+                                  {Array.apply(null, {length: 500}).map((item, index) => (
+                                    <MenuItem
+                                      key={uuid()}
+                                      value={index}
+                                    >
+                                      {index.toString()}
+                                    </MenuItem>
+                                  ))}
+                                </TextField>
+
+                                <StyledToggleButtonGroup
+                                  size="small"
+                                  value={formats}
+                                  onChange={handleFormat}
+                                  aria-label="text formatting"
+                                >
+                                  <ToggleButton value="bold" aria-label="bold" selected={isBold}>
+                                    <FormatBoldIcon onClick = {handleBold}/>
+                                  </ToggleButton>
+                                  <ToggleButton value="italic" onClick = {handleItalic} aria-label="italic" selected={isItalic} >
+                                    <FormatItalicIcon />
+                                  </ToggleButton>
+                                  <ToggleButton value="underlined" onClick = {handleUnderline} aria-label="underlined" selected={isUnderline}>
+                                    <FormatUnderlinedIcon />
+                                  </ToggleButton>
+
+                                </StyledToggleButtonGroup>
+
+                                <StyledToggleButtonGroup
+                                  size="small"
+                                  value={alignment}
+                                  exclusive
+                                  onChange={handleAlignment}
+                                  aria-label="text alignment"
+                                >
+                                  <ToggleButton value="left" aria-label="left aligned">
+                                    <FormatAlignLeftIcon />
+                                  </ToggleButton>
+                                  <ToggleButton value="center" aria-label="centered">
+                                    <FormatAlignCenterIcon />
+                                  </ToggleButton>
+                                  <ToggleButton value="right" aria-label="right aligned">
+                                    <FormatAlignRightIcon />
+                                  </ToggleButton>
+                                </StyledToggleButtonGroup>
+                            </Stack>
+                      </div>
+
+  const textMenu = (selectedCanvasObject.type === "text") ? textEditMenu : <></>
 
   return (
-    <div>
-       <Stack direction="row" spacing={8}>
+    <div  >
+       <Stack direction="row" spacing={2}   justifyContent="center" alignItems="center">
 
-        <Box>
-        <TextField
-          // label="Font Style"
-          // value={fontFamily}
-          variant="outlined"
-          size="small"
-          select
-          value={fontFam }
-          className={fontClasses.select}
-          // fullWidth
-          onChange={(e) => fontChange(e.target.value)}
-        >
-          {fonts.map((item) => (
-            <MenuItem
-              key={uuid()}
-              value={item.value}
-              style={{ fontFamily: item.value }}
-            >
-              {item.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        {textMenu}
 
-        <TextField
-          // label="Font Style"
-          // value="size"
-          variant="outlined"
-          size="small"
-          select
-          value={fontSize.toString()}
-          className={fontClasses.select}
-          // fullWidth
-          onChange={(e) => fontSizeChange(e.target.value)}
-        >
-          {Array.apply(null, {length: 500}).map((item, index) => (
-            <MenuItem
-              key={uuid()}
-              value={index}
-            >
-              {index.toString()}
-            </MenuItem>
-          ))}
-        </TextField>
-          </Box>
-        <StyledToggleButtonGroup
-          size="small"
-          value={formats}
-          onChange={handleFormat}
-          aria-label="text formatting"
-        >
-          <ToggleButton value="bold" aria-label="bold" selected={isBold}>
-            <FormatBoldIcon onClick = {handleBold}/>
-          </ToggleButton>
-          <ToggleButton value="italic" onClick = {handleItalic} aria-label="italic" selected={isItalic} >
-            <FormatItalicIcon />
-          </ToggleButton>
-          <ToggleButton value="underlined" onClick = {handleUnderline} aria-label="underlined" selected={isUnderline}>
-            <FormatUnderlinedIcon />
-          </ToggleButton>
 
-        </StyledToggleButtonGroup>
+
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-
-
-
-        <StyledToggleButtonGroup
-          size="small"
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-        >
-          <ToggleButton value="left" aria-label="left aligned">
-            <FormatAlignLeftIcon />
-          </ToggleButton>
-          <ToggleButton value="center" aria-label="centered">
-            <FormatAlignCenterIcon />
-          </ToggleButton>
-          <ToggleButton value="right" aria-label="right aligned">
-            <FormatAlignRightIcon />
-          </ToggleButton>
-        </StyledToggleButtonGroup>
-        <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-
 
         <StyledToggleButtonGroup
           size="small"

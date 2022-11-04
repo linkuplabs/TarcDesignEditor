@@ -54,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AppToolbarImagesPanel = ({ cellWidth, cellHeight, open,images, height, onClick, searchPlaceholder, showPixaby }) => {
+export const AppToolbarImagesPanel = ({ cellWidth, cellHeight, open,images, height, onClick, searchPlaceholder, showPixaby, onColorChange }) => {
   const classes = useStyles();
 
   // const [images, setImages] = React.useState([]);
@@ -64,7 +64,7 @@ export const AppToolbarImagesPanel = ({ cellWidth, cellHeight, open,images, heig
   }
 
 
-  let panelHeader = (open)  ?<PanelHeader className= {classes.pinContainerOpen } showSearch={true} searchPlaceholder={searchPlaceholder} showPixaby = {showPixaby} /> :<></>
+  let panelHeader = (open)  ?<PanelHeader className= {classes.pinContainerOpen } showSearch={true} searchPlaceholder={searchPlaceholder} showPixaby = {showPixaby} onColorChange={onColorChange} /> :<></>
 
 
   return (

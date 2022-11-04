@@ -23,9 +23,11 @@ import CropSquareIcon from '@mui/icons-material/CropSquare';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import Icon from "@material-ui/core/Icon";
+import LayersIcon from '@mui/icons-material/Layers';
 
 const pixab = process.env.PUBLIC_URL + '/pixabay.png';
 const pixabay = "https://pixabay.com/static/img/logo_square.svg";
+
 
 const PixaBayIcon =  <Icon>
     <img alt="edit" src= {pixab} style={{width: "100%"}}  />
@@ -83,6 +85,11 @@ export const BASE_BUTTONS  = [
     name: "Uploads",
     icon:  <CloudUploadIcon />,
   },
+  // {
+  //   id: "layers",
+  //   name: "Layers",
+  //   icon:  <LayersIcon />,
+  // },
   {
     id: "settings",
     name: "Settings",

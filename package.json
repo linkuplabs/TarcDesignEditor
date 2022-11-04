@@ -22,6 +22,7 @@
     "fabricjs-react": "^1.0.8",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
+    "react-dnd": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-dropzone": "^9.0.0",
     "react-fabricjs": "^0.1.6",
